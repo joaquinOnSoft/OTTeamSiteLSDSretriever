@@ -10,6 +10,8 @@ import com.interwoven.wcm.lscs.Client;
 
 public class LSDSWrapper {
 	
+	private static final int MAX_RESULTS = 25;	
+	
 	private String getQueryString(RequestContext context) {
 		System.out.println("Init getQueryString");
 
@@ -41,6 +43,27 @@ public class LSDSWrapper {
 	}
 	
 	
+	private int getMaxResultsParam(RequestContext context) {	
+		int intMaxResults = MAX_RESULTS;
+		
+		String strMaxResults = context.getParameterString("maxResults");
+		System.out.println("Max Result: " + strMaxResults);	
+
+		if(strMaxResults != null && strMaxResults.compareTo("") != 0) {
+			try {
+				intMaxResults = Integer.parseInt(strMaxResults);
+			}
+			catch (NumberFormatException e) {
+				System.err.println("Max Result is not a valid number. Using default max. value" + e.getMessage());	
+			}
+		}
+		else {
+			System.out.println("Using default max. value");
+		}
+		
+		return intMaxResults;
+	}	
+	
 	/**
 	 * Get the `Content Items` of a given Category/Name or that match the given LSCS query.
 	 * These are the parameters supported in TeamSite configuration:
@@ -71,9 +94,11 @@ public class LSDSWrapper {
 			String queryString = getQueryString(context);
 			System.out.println("QUERY STRING: " + queryString);
 			
+			int maxResults = getMaxResultsParam(context);
+			
 			Element resultsElement = rootElement.addElement("results");
 			resultsElement.addCDATA(queryString);
-			resultsElement.addComment(queryString);
+			resultsElement.addCDATA("MAX RESULTS: " + maxResults);
 			doc.add(resultsElement);
 			System.out.println("Results added");							
 		}

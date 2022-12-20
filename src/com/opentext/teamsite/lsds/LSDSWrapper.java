@@ -10,7 +10,10 @@ import com.interwoven.wcm.lscs.Client;
 
 public class LSDSWrapper {
 	
-	private static final int MAX_RESULTS = 25;	
+	private static final String PARAM_MAX_RESULTS = "maxResults";
+	private static final String PARAM_CONTENT_NAME = "contentName";
+	private static final String PARAM_CONTENT_CATEGORY = "contentCategory";
+	private static final int NUM_MAX_RESULTS = 25;	
 	
 	private String getQueryString(RequestContext context) {
 		System.out.println("Init getQueryString");
@@ -18,10 +21,10 @@ public class LSDSWrapper {
 		String queryString = "";
 		try {
 			//if(queryString == null || queryString.compareTo("") == 0) {								
-				String contentCategory = context.getParameterString("contentCategory");
+				String contentCategory = context.getParameterString(PARAM_CONTENT_CATEGORY);
 				System.out.println("Content category: " + contentCategory);	
 
-				String contentName = context.getParameterString("contentName");
+				String contentName = context.getParameterString(PARAM_CONTENT_NAME);
 				System.out.println("Content Name: " + contentName);	
 
 				//if(contentCategory != null && contentName != null) {
@@ -44,9 +47,9 @@ public class LSDSWrapper {
 	
 	
 	private int getMaxResultsParam(RequestContext context) {	
-		int intMaxResults = MAX_RESULTS;
+		int intMaxResults = NUM_MAX_RESULTS;
 		
-		String strMaxResults = context.getParameterString("maxResults");
+		String strMaxResults = context.getParameterString(PARAM_MAX_RESULTS);
 		System.out.println("Max Result: " + strMaxResults);	
 
 		if(strMaxResults != null && strMaxResults.compareTo("") != 0) {
@@ -64,6 +67,10 @@ public class LSDSWrapper {
 		return intMaxResults;
 	}	
 	
+	private boolean isEdit(RequestContext context) {
+		return !context.isPreview() && !context.isRuntime();
+	}
+		
 	/**
 	 * Get the `Content Items` of a given Category/Name or that match the given LSCS query.
 	 * These are the parameters supported in TeamSite configuration:
@@ -85,20 +92,31 @@ public class LSDSWrapper {
 		try {
 			Element rootElement = doc.addElement("root");
 			System.out.println("Root element created");
-						
+
+			//Define project name
 			Client client = ContentService.getInstance().getContentClient(context);
 			String projectName = context.getSite().getBranch();
 			client.setProject(projectName);
 			System.out.println("Client created.  Project name: " + projectName);	
 			
+			//Define context name in Preview and Edit views
+			if (context.isPreview() || isEdit(context)) {
+				System.out.println("Is preview");
+
+				String contextName = context.getSite().getArea();
+				client.setContextString(contextName);			
+			}	
+							
+			//Recover parameters
 			String queryString = getQueryString(context);
-			System.out.println("QUERY STRING: " + queryString);
-			
+			System.out.println("QUERY STRING: " + queryString);			
 			int maxResults = getMaxResultsParam(context);
 			
+			
+			//Add results
 			Element resultsElement = rootElement.addElement("results");
 			resultsElement.addCDATA(queryString);
-			resultsElement.addCDATA("MAX RESULTS: " + maxResults);
+			resultsElement.addCDATA("  MAX RESULTS: " + maxResults);
 			doc.add(resultsElement);
 			System.out.println("Results added");							
 		}

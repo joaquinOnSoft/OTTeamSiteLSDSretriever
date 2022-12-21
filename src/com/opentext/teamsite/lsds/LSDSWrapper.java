@@ -24,11 +24,18 @@ import com.interwoven.wcm.lscs.LSCSException;
 import com.interwoven.wcm.lscs.LSCSIterator;
 
 public class LSDSWrapper {
+	private static final String LOCALE_ES_ES = "es_ES";
+	private static final String LOCALE_EN_GB = "en_GB";
 	
 	private static final String PARAM_MAX_RESULTS = "maxResults";
 	private static final String PARAM_CONTENT_NAME = "contentName";
 	private static final String PARAM_CONTENT_CATEGORY = "contentCategory";
+	private static final String PARAM_LOCALE = "locale";
 	private static final int NUM_MAX_RESULTS = 25;	
+	
+	private boolean hasValue(String param) {
+		return param != null && param.compareTo("") != 0;
+	}
 	
 	private String getQueryString(RequestContext context) {
 		System.out.println("Init getQueryString");
@@ -40,16 +47,25 @@ public class LSDSWrapper {
 				System.out.println("Content category: " + contentCategory);	
 
 				String contentName = context.getParameterString(PARAM_CONTENT_NAME);
-				System.out.println("Content Name: " + contentName);	
+				System.out.println("Content Name: " + contentName);
+				
+				String locale = context.getParameterString(PARAM_LOCALE);
+				System.out.println("locale: " + locale);					
 
-				//if(contentCategory != null && contentName != null) {
-					StringBuilder query = new StringBuilder();
+				StringBuilder query = new StringBuilder();
+				if (hasValue(contentCategory) && hasValue(contentName)) {
 					query.append("q=TeamSite/Templating/DCR/Type:")
 					.append(contentCategory)
 					.append("/")
 					.append(contentName);
-					queryString = query.toString();
-				//}
+				}
+				
+				if(hasValue(locale)) {
+					query.append(" AND G11N/Locale:").append(locale);
+				}
+									
+				queryString = query.toString();
+
 			//}
 		} catch (Exception e) {
 			System.err.println("getQueryString: " +  e.getMessage());

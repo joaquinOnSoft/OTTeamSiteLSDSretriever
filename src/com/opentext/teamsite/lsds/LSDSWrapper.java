@@ -1,12 +1,27 @@
 package com.opentext.teamsite.lsds;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
+import java.io.IOException;
+import java.io.StringReader;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.DOMReader;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import com.interwoven.livesite.common.io.StreamUtil;
 import com.interwoven.livesite.content.ContentService;
 import com.interwoven.livesite.dom4j.Dom4jUtils;
 import com.interwoven.livesite.runtime.RequestContext;
 import com.interwoven.wcm.lscs.Client;
+import com.interwoven.wcm.lscs.LSCSException;
+import com.interwoven.wcm.lscs.LSCSIterator;
 
 public class LSDSWrapper {
 	
@@ -111,12 +126,21 @@ public class LSDSWrapper {
 			String queryString = getQueryString(context);
 			System.out.println("QUERY STRING: " + queryString);			
 			int maxResults = getMaxResultsParam(context);
-			
-			
+
 			//Add results
 			Element resultsElement = rootElement.addElement("results");
-			resultsElement.addCDATA(queryString);
-			resultsElement.addCDATA("  MAX RESULTS: " + maxResults);
+			
+			//Use LSDS API to recover content from TeamSite
+			LSCSIterator<com.interwoven.wcm.lscs.Document> iter = client.getDocuments(queryString, 0, maxResults);
+			System.out.println("# results: " + iter.getTotalSize());
+
+			while (iter.hasNext()) {				
+				com.interwoven.wcm.lscs.Document iterDoc = iter.next();
+				System.out.println("Result document path: " + iterDoc.getPath());
+				resultsElement.add(lscsDocumentToXml(iterDoc, true).getRootElement());
+			}				
+			
+			//Add results to root document
 			doc.add(resultsElement);
 			System.out.println("Results added");							
 		}
@@ -126,4 +150,58 @@ public class LSDSWrapper {
 		
 		return doc;
 	}
+	
+	/**
+	 * Constructing document from String Object
+	 * @param rs
+	 * @return
+	 * @throws FactoryConfigurationError
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 */
+	private org.w3c.dom.Document toDocument(String rs)
+			throws FactoryConfigurationError, ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		StringReader reader = new StringReader(rs);
+		InputSource source = new InputSource(reader);
+		return builder.parse(source);
+	}		
+	
+	private org.dom4j.Document lscsDocumentToXml(com.interwoven.wcm.lscs.Document lscsDocument, boolean includeContent)
+			throws LSCSException, IOException {
+		Element xmlElement = DocumentHelper.createElement("document");
+		org.dom4j.Document xmlDocument = DocumentHelper.createDocument(xmlElement);
+		String content;
+		xmlElement.addAttribute("id", lscsDocument.getId());
+		xmlElement.addAttribute("path", lscsDocument.getPath());
+		xmlElement.addAttribute("uri", lscsDocument.getContentURL());
+
+		Element metadata = xmlElement.addElement("metadata");
+		String[] metadataNames = lscsDocument.getAttributeNames();
+		for (String metadataName : metadataNames) {
+			metadata.addElement("field").addAttribute("name", metadataName).addText(lscsDocument.getAttribute(metadataName));
+		}
+
+		org.w3c.dom.Document w3DocumentContainer;
+		org.dom4j.Document document;
+
+		// This is needed until client.setIncludeContent(true); is fixed
+		if (includeContent) {
+			content = StreamUtil.read(lscsDocument.getContentStream());
+			Element contentXmlElement = xmlElement.addElement("content");
+
+			try {
+				w3DocumentContainer = toDocument(content);
+				org.dom4j.io.DOMReader reader = new DOMReader();
+				document = reader.read(w3DocumentContainer);
+				contentXmlElement.add(document.getRootElement());
+			} catch (FactoryConfigurationError | ParserConfigurationException | SAXException e) {
+				System.err.println("Error parsing LSCS document: " + lscsDocument.getPath() + e.getMessage());
+			}
+		}
+
+		return xmlDocument;
+	}		
 }

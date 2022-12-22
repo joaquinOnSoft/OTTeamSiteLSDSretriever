@@ -15,7 +15,7 @@ Follow these steps in the server that host your Containerized TeamSite environme
  
  1. Copy all the scripts, `.sh files`, located under the  `scripts` folder in your server
  2. Customize, if needed, the scripts
-   - **02_copy_custom_jar.sh** 
+   - Script **02_copy_custom_jar.sh** 
        - Check the variable `JAR` value. It's the .jar file name, i.e. OTTeamSiteLSDSRetriever22.2.jar
        - Check the variable `SOURCE_PATH` value. It's the folder where you jave stored the .jar file in your server.
        
@@ -28,10 +28,9 @@ SOURCE_PATH="/home/otadmin/Downloads/"
 ...
 ```
 
-   - **03_apply_ts_customization.sh**
+   - Script **03_apply_ts_customization.sh**
        - Check the line 18, where we define de Virtual Machine name, without the *.eimdemo.com* extension
-   
-       
+          
 ```shell
 #!/bin/sh
 ...
@@ -41,7 +40,6 @@ SOURCE_PATH="/home/otadmin/Downloads/"
 ```
  
  3. Open a terminal an execute the following commands:
-
 
 ```shell
 ./01_clear.sh

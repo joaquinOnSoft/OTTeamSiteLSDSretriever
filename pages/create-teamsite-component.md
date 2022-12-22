@@ -99,7 +99,9 @@ that use the `TeamSite LiveSite Display Services (LSDS) API` to access to `Conte
 ```
 
 > **NOTE**: 
+>
 > `Object` tag includes the class name that we have created, including the package.
+>
 > The `Method` tag includes the method name defined in our Java class.
 
 
@@ -108,3 +110,18 @@ that use the `TeamSite LiveSite Display Services (LSDS) API` to access to `Conte
    - Click on `Finish` button
    
 ## Publish the component
+
+On `CC Professional`:
+
+   - Select your component, i.e. Timer-mortage-by-dcr-java
+   - Click on the `Submit` button in the top-right-hand side
+   
+![Publish TeamSite component. Submit](../images/publish-teamsite-component.png)    
+   
+   - Click on the `Run job` 
+
+![Publish TeamSite component. Run job.](../images/submit-workflow-run-job.png)    
+   
+Congratulations, you have published your component.
+
+

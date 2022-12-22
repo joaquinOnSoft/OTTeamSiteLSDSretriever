@@ -4,6 +4,8 @@
 Follow these steps to create a **XSLT 2.0 TeamSite component** that use this customization 
 that use the `TeamSite LiveSite Display Services (LSDS) API` to access to `Content Items`
 
+## Create a component
+
  - Open TeamSite in your browser
  - Go to `CC PRofessional`
  - Select `File > New Component`
@@ -19,7 +21,7 @@ that use the `TeamSite LiveSite Display Services (LSDS) API` to access to `Conte
 
    - **Name**: Timer-mortage-by-dcr-java
    - **Appearance**: Keep it as is right now. We'll discuss it later
-   - **Content XML**: Copy this XML 
+   - **Content XML**: Copy this XML the `Content XML` field
 		
 ```xml
 <Data>
@@ -96,9 +98,13 @@ that use the `TeamSite LiveSite Display Services (LSDS) API` to access to `Conte
 </Data>
 ```
 
-> **NOTE**: `Object` tag includes the class name that we have created, including the package.
+> **NOTE**: 
+> `Object` tag includes the class name that we have created, including the package.
 > The `Method` tag includes the method name defined in our Java class.
 
 
    ![Java class](../images/java-class.png)
 
+   - Click on `Finish` button
+   
+## Publish the component

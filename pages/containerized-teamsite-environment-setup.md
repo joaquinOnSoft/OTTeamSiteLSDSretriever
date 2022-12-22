@@ -18,6 +18,7 @@ Follow these steps in the server that host your Containerized TeamSite environme
     - **02_copy_custom_jar.sh** 
        - Check the variable `JAR` value. It's the .jar file name, i.e. OTTeamSiteLSDSRetriever22.2.jar
        - Check the variable `SOURCE_PATH` value. It's the folder where you jave stored the .jar file in your server.
+       
 ```
 #!/bin/sh
 ...

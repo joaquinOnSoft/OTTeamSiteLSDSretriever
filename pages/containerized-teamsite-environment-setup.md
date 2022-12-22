@@ -26,6 +26,7 @@ JAR="OTTeamSiteLSDSRetriever22.2.jar"
 SOURCE_PATH="/home/otadmin/Downloads/"
 ...
 ```
+
     - **03_apply_ts_customization.sh**
        - Check the line 18, where we define de Virtual Machine name, without the *.eimdemo.com* extension
 ```

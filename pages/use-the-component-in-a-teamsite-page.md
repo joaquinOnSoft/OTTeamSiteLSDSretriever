@@ -20,6 +20,23 @@ To use our component in a new page we must follow these steps:
  - On the *Editing* page, click on `ADD COMPONENT` 
  
    ![ADD COMPONENT](../images/add-component.png)
+   
+ - On the *Editing* page, click on `ADD COMPONENT`    
+ 
+    ![ADD COMPONENT](../images/select-and-add-a-component.png)
+    
+ - Select your component
+ 
+   ![Component added](../images/editing-page-component-added.png) 
+    
+The job is done. Now, you can customize the behavior of your component, just click on the *hamburger icon* on the left-hand side of the component
+
+   ![Hamburger icon](../images/hamburger-icon-component.png) 
+
+You can modify the properties if you want:
+
+   ![Component properties](../images/component-properties.png) 
+
  
  
  
